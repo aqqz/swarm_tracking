@@ -1,0 +1,5 @@
+bin/*
+cf2.*
+build/
+cache/
+*.log

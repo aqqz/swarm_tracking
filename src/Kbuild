@@ -1,0 +1,1 @@
+obj-y += main.o fly_task.o uwb_task.o
