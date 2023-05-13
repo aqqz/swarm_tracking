@@ -36,8 +36,6 @@ extern int flytime;
 extern bool isflying;
 
 
-
-
 static void uwbTxTask(void *parameters) {
   systemWaitStart();
 
@@ -49,7 +47,7 @@ static void uwbTxTask(void *parameters) {
   {
     if(MY_UWB_ADDRESS == 0)
     {
-      if(opentime < 30) //广播起飞信号
+      if(opentime > 0) //广播起飞信号
       {
         txdata.ack = 0;
         txdata.isflying = isflying;
@@ -59,17 +57,8 @@ static void uwbTxTask(void *parameters) {
         txPacketCache.header.length = sizeof(Packet_Header_t) + sizeof(SwarmData_t);
         memcpy(&txPacketCache.payload, &txdata, sizeof(txdata));
 
-        uwbSendPacketBlock(&txPacketCache);
+        uwbSendPacket(&txPacketCache);
         // DEBUG_PRINT("uav 0 send.\n");
-      }
-
-      if(flytime < 10)
-      {
-
-      }
-      else if(flytime < 20)
-      {
-
       }
     }
     else
@@ -92,20 +81,12 @@ static void uwbRxTask(void *parameters) {
     }
     else
     {
-      if(opentime < 30)
+      if(opentime > 0)
       {
-        uwbReceivePacketBlock(DATA, &rxPacketCache);
+        uwbReceivePacket(DATA, &rxPacketCache);
         rxdata = (SwarmData_t *)&rxPacketCache.payload;
-        DEBUG_PRINT("uav 1 recv.\n");
-        DEBUG_PRINT("%d %d %d %d\n", rxdata->ack, rxdata->isflying, rxdata->islanding, rxdata->seqNumber);
-      }
-      if(flytime < 10)
-      {
-
-      }
-      else if(flytime < 20)
-      {
-
+        // DEBUG_PRINT("uav 1 recv.\n");
+        // DEBUG_PRINT("%d %d %d %d\n", rxdata->ack, rxdata->isflying, rxdata->islanding, rxdata->seqNumber);
       }
     }
     vTaskDelay(100);

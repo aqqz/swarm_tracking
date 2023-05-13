@@ -3,3 +3,5 @@ cf2.*
 build/
 cache/
 *.log
+*.cmd
+*.o

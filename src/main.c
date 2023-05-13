@@ -74,7 +74,7 @@ void reset_estimators()
 
 void appMain()
 {
-  vTaskDelay(5000);
+  vTaskDelay(3000);
   DEBUG_PRINT("Waiting for activation ...\n");
 
   reset_estimators();

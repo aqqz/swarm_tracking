@@ -9,7 +9,7 @@
 // #include "uart_task.h"
 // #include "ranging_task.h"
 
-#define PI  3.1415926
+#define PI  3.141592653579
 
 void flyInit(void);
 void flyTask(void *pvParameters);
