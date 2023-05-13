@@ -31,7 +31,6 @@ UWB_Packet_t txPacketCache;
 UWB_Packet_t rxPacketCache;
 SwarmData_t txdata;
 SwarmData_t *rxdata;
-extern int opentime;
 extern int flytime;
 extern bool isflying;
 
@@ -45,13 +44,12 @@ static void uwbTxTask(void *parameters) {
 
   while(1)
   {
-    if(MY_UWB_ADDRESS == 0)
+    if(MY_UWB_ADDRESS == 0) //leader无人机
     {
-      if(opentime > 0) //广播起飞信号
+      if(rxdata->flyack!=1) //未收到响应，发送起飞报文
       {
-        txdata.ack = 0;
+        txdata.flyack = 0;
         txdata.isflying = isflying;
-        txdata.islanding = 0;
         txdata.seqNumber++;
 
         txPacketCache.header.length = sizeof(Packet_Header_t) + sizeof(SwarmData_t);
@@ -61,9 +59,20 @@ static void uwbTxTask(void *parameters) {
         // DEBUG_PRINT("uav 0 send.\n");
       }
     }
-    else
+    else //follower无人机
     {
+      if(isflying && flytime < 10) //已经起飞，1s内发送响应报文
+      {
+        txdata.flyack = 1;
+        txdata.isflying = isflying;
+        txdata.seqNumber++;
 
+        txPacketCache.header.length = sizeof(Packet_Header_t) + sizeof(SwarmData_t);
+        memcpy(&txPacketCache.payload, &txdata, sizeof(txdata));
+
+        uwbSendPacket(&txPacketCache);
+        // DEBUG_PRINT("uav 1 send.\n");
+      }
     }
     vTaskDelay(100);
   }
@@ -75,19 +84,18 @@ static void uwbRxTask(void *parameters) {
 
   while(1)
   {
-    if(MY_UWB_ADDRESS == 0)
+    if(MY_UWB_ADDRESS == 0) //leader无人机
     {
-
+      uwbReceivePacket(DATA, &rxPacketCache);
+      rxdata = (SwarmData_t *)&rxPacketCache.payload;
+      // DEBUG_PRINT("uav 0 recv.\n");
     }
-    else
+    else //follower无人机
     {
-      if(opentime > 0)
-      {
-        uwbReceivePacket(DATA, &rxPacketCache);
-        rxdata = (SwarmData_t *)&rxPacketCache.payload;
-        // DEBUG_PRINT("uav 1 recv.\n");
-        // DEBUG_PRINT("%d %d %d %d\n", rxdata->ack, rxdata->isflying, rxdata->islanding, rxdata->seqNumber);
-      }
+      uwbReceivePacket(DATA, &rxPacketCache);
+      rxdata = (SwarmData_t *)&rxPacketCache.payload;
+      isflying = rxdata->isflying; //更新起飞状态
+      // DEBUG_PRINT("uav 1 recv.\n");
     }
     vTaskDelay(100);
   }
