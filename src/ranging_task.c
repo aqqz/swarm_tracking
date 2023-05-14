@@ -6,6 +6,8 @@
 static bool rangingisInit = false;
 static TaskHandle_t rangingTaskHandle = NULL;
 
+float s1, s2, s3, s4, s5, s6, xa, ya, xb, yb;
+
 extern int flytime;
 extern uint16_t MY_UWB_ADDRESS;
 

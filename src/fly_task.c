@@ -1,17 +1,18 @@
 #define DEBUG_MODULE "FLY"
 #include "fly_task.h"
 #include "uwb_task.h"
+#include "vision_task.h"
 #include "param.h"
 
 static TaskHandle_t flyTaskHandle = NULL;
 static bool flyisInit = false;
 static bool takeoff = false;
 static bool land = false;
-static float height = 0.5;
+static float height = 1.0;
 int flytime = 0; //起飞时间
 bool isflying = false;
-// extern object_state curstate;
-// extern box_trans_t curframe;
+extern object_state curstate;
+extern box_trans_t curframe;
 extern uint16_t MY_UWB_ADDRESS;
 
 void flyInit(void)
@@ -57,7 +58,14 @@ void flyTask(void *pvParameters)
         }
         else if(flytime < 200) //跟踪
         {
-          ;
+          // if(curframe.box_id == 2 && curframe.box_conf > 0.2)
+          // {
+          //   if(curstate.x > 0)
+          //   {
+          //     DEBUG_PRINT("TIME: [%d] GOTO: (%.3f, %.3f, %.3f)\n", flytime, (curstate.x-1.0)*0.1, curstate.y*0.1, curstate.z*0.1);
+          //     crtpCommanderHighLevelGoTo((curstate.x-1.0)*0.1, curstate.y*0.1, curstate.z*0.1, 0, 0.1, true);
+          //   }
+          // }
         }
         else if(land==false)
         {

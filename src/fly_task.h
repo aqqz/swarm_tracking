@@ -6,8 +6,6 @@
 #include "task.h"
 #include "debug.h"
 #include <math.h>
-// #include "uart_task.h"
-// #include "ranging_task.h"
 
 #define PI  3.141592653579
 
