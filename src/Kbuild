@@ -1,1 +1,1 @@
-obj-y += main.o fly_task.o uwb_task.o vision_task.o
+obj-y += main.o fly_task.o uwb_task.o vision_task.o ranging_task.o

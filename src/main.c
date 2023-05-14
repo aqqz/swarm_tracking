@@ -4,6 +4,7 @@
 #include "debug.h"
 #include "fly_task.h"
 #include "uwb_task.h"
+#include "ranging_task.h"
 
 
 float get_min(float *var_history, int len_history)
@@ -79,6 +80,7 @@ void appMain()
 
   reset_estimators();
   uwbInit();
+  rangeInit();
   flyInit();
 
 }
