@@ -20,6 +20,7 @@
 #include "dw3000.h"
 #include "uwb_task.h"
 #include "fly_task.h"
+#include "vision_task.h"
 
 
 static TaskHandle_t uwbTxTaskHandle = 0;
@@ -33,6 +34,8 @@ SwarmData_t txdata;
 SwarmData_t *rxdata;
 extern int flytime;
 extern bool isflying;
+extern bool isdetected;
+extern object_state curstate;
 
 
 static void uwbTxTask(void *parameters) {
@@ -51,6 +54,22 @@ static void uwbTxTask(void *parameters) {
         txdata.flyack = 0;
         txdata.isflying = isflying;
         txdata.seqNumber++;
+
+        txPacketCache.header.length = sizeof(Packet_Header_t) + sizeof(SwarmData_t);
+        memcpy(&txPacketCache.payload, &txdata, sizeof(txdata));
+
+        uwbSendPacket(&txPacketCache);
+        // DEBUG_PRINT("uav 0 send.\n");
+      }
+      else if(flytime < 600) //60s内发送飞行报文
+      {
+        txdata.flyack = 0;
+        txdata.isflying = isflying;
+        txdata.seqNumber++;
+        txdata.isdetected = isdetected;
+        txdata.p.x = curstate.x;
+        txdata.p.y = curstate.y;
+        txdata.p.z = curstate.z;
 
         txPacketCache.header.length = sizeof(Packet_Header_t) + sizeof(SwarmData_t);
         memcpy(&txPacketCache.payload, &txdata, sizeof(txdata));
@@ -95,6 +114,10 @@ static void uwbRxTask(void *parameters) {
       uwbReceivePacket(DATA, &rxPacketCache);
       rxdata = (SwarmData_t *)&rxPacketCache.payload;
       isflying = rxdata->isflying; //更新起飞状态
+      isdetected = rxdata->isdetected; //更新目标状态
+      curstate.x = rxdata->p.x; //更新飞行状态
+      curstate.y = rxdata->p.y;
+      curstate.z = rxdata->p.z;
       // DEBUG_PRINT("uav 1 recv.\n");
     }
     vTaskDelay(100);

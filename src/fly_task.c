@@ -12,7 +12,7 @@ static float height = 1.0;
 int flytime = 0; //起飞时间
 bool isflying = false;
 extern object_state curstate;
-extern box_trans_t curframe;
+extern bool isdetected;
 extern uint16_t MY_UWB_ADDRESS;
 
 void flyInit(void)
@@ -33,66 +33,26 @@ void flyTask(void *pvParameters)
   {
     if(isflying) //得到起飞信号
     {
-      if(MY_UWB_ADDRESS == 0) //leader无人机
+      if(takeoff==false) //起飞
       {
-        if(takeoff==false) //起飞
-        {
-          crtpCommanderHighLevelTakeoff(height, 0.1);
-          takeoff=true;
-        }
-        else if(flytime == 20) //x方向前进0.5
-        {
-          crtpCommanderHighLevelGoTo(0.5, 0, 0, 0, 0.1, true);
-        }
-        else if(flytime == 40) //y方向前进0.5
-        {
-          crtpCommanderHighLevelGoTo(0, 0.5, 0, 0, 0.1, true);
-        }
-        else if(flytime == 80) //y方向后退0.5
-        {
-          crtpCommanderHighLevelGoTo(0, -0.5, 0, 0, 0.1, true);
-        }
-        else if(flytime == 100) //x方向后退0.5
-        {
-          crtpCommanderHighLevelGoTo(-0.5, 0, 0, 0, 0.1, true);
-        }
-        else if(flytime < 200) //跟踪
-        {
-          // if(curframe.box_id == 2 && curframe.box_conf > 0.2)
-          // {
-          //   if(curstate.x > 0)
-          //   {
-          //     DEBUG_PRINT("TIME: [%d] GOTO: (%.3f, %.3f, %.3f)\n", flytime, (curstate.x-1.0)*0.1, curstate.y*0.1, curstate.z*0.1);
-          //     crtpCommanderHighLevelGoTo((curstate.x-1.0)*0.1, curstate.y*0.1, curstate.z*0.1, 0, 0.1, true);
-          //   }
-          // }
-        }
-        else if(land==false)
-        {
-          crtpCommanderHighLevelLand(0, 1.0);
-          land = true;
-        }
-      }  
-      else //follower无人机
+        crtpCommanderHighLevelTakeoff(height, 0.1);
+        takeoff=true;
+      }
+      else if(flytime < 600) //跟踪
       {
-        if(takeoff==false) //起飞
+        if(isdetected) //检测到目标
         {
-          crtpCommanderHighLevelTakeoff(height, 0.1);
-          takeoff=true;
+          if(curstate.x > 0) 
+          {
+            DEBUG_PRINT("TIME: [%d] GOTO: (%.3f, %.3f, %.3f)\n", flytime, (curstate.x-1.0)*0.1, curstate.y*0.1, curstate.z*0.1);
+            crtpCommanderHighLevelGoTo((curstate.x-1.0)*0.1, curstate.y*0.1, curstate.z*0.1, 0, 0.1, true);
+          }
         }
-        else if(flytime == 60) //x方向前进0.5
-        {
-          crtpCommanderHighLevelGoTo(0.5, 0, 0, 0, 0.1, true);
-        }
-        else if(flytime < 200) //跟踪
-        {
-          ;
-        }
-        else if(land==false)
-        {
-          crtpCommanderHighLevelLand(0, 1.0);
-          land=true;
-        }
+      }
+      else if(land==false)
+      {
+        crtpCommanderHighLevelLandWithVelocity(0, 0.4, false);
+        land = true;
       }
       flytime++;
     }

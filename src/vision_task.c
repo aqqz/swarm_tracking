@@ -9,8 +9,9 @@ static logVarId_t idFront;
 static uint16_t front; //Multi-ranger读数
 static float distance; //目标深度信息
 static float lastdistance; //上一次检测到目标的深度信息
+static box_trans_t curframe; //检测框信息
 
-box_trans_t curframe;
+bool isdetected = false; //是否检测到目标
 object_state curstate; //目标当前状态信息
 
 
@@ -59,6 +60,7 @@ void visionTask(void *pvParameters)
     // vision measure
     if(curframe.box_id == 2 && curframe.box_conf > 0.2)
     {
+      isdetected = true;
       if(distance < 3)
       {
         vision_measure(&curframe, distance, &curstate);
@@ -72,6 +74,7 @@ void visionTask(void *pvParameters)
     }
     else
     {
+      isdetected = false;
       DEBUG_PRINT("no detection result!\n");
     }
 
