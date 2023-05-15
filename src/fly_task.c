@@ -33,26 +33,49 @@ void flyTask(void *pvParameters)
   {
     if(isflying) //得到起飞信号
     {
-      if(takeoff==false) //起飞
+      if(MY_UWB_ADDRESS == 0)
       {
-        crtpCommanderHighLevelTakeoff(height, 0.1);
-        takeoff=true;
-      }
-      else if(flytime < 600) //跟踪
-      {
-        if(isdetected) //检测到目标
+        if(takeoff==false) //起飞
         {
-          if(curstate.x > 0) 
-          {
-            DEBUG_PRINT("TIME: [%d] GOTO: (%.3f, %.3f, %.3f)\n", flytime, (curstate.x-1.0)*0.1, curstate.y*0.1, curstate.z*0.1);
-            crtpCommanderHighLevelGoTo((curstate.x-1.0)*0.1, curstate.y*0.1, curstate.z*0.1, 0, 0.1, true);
-          }
+          crtpCommanderHighLevelTakeoff(height, 0.1);
+          takeoff=true;
+        }
+        else if(flytime == 20) //x方向前进0.5
+        {
+          crtpCommanderHighLevelGoTo(0.5, 0, 0, 0, 0.1, true);
+        }
+        else if(flytime == 40) //y方向前进0.5
+        {
+          crtpCommanderHighLevelGoTo(0, 0.5, 0, 0, 0.1, true);
+        }
+        else if(flytime == 60) //y方向后退0.5
+        {
+          crtpCommanderHighLevelGoTo(0, -0.5, 0, 0, 0.1, true);
+        }
+        else if(flytime == 80) //x方向后退0.5
+        {
+          crtpCommanderHighLevelGoTo(-0.5, 0, 0, 0, 0.1, true);
+        }
+        else if(flytime < 200) //跟踪
+        {
+          // if(isdetected) //检测到目标
+          // {
+          //   if(curstate.x > 0) 
+          //   {
+          //     DEBUG_PRINT("TIME: [%d] GOTO: (%.3f, %.3f, %.3f)\n", flytime, (curstate.x-1.0)*0.1, curstate.y*0.1, curstate.z*0.1);
+          //     crtpCommanderHighLevelGoTo((curstate.x-1.0)*0.1, curstate.y*0.1, curstate.z*0.1, 0, 0.1, true);
+          //   }
+          // }
+        }
+        else if(land==false)
+        {
+          crtpCommanderHighLevelLandWithVelocity(0, 0.4, false);
+          land = true;
         }
       }
-      else if(land==false)
+      else
       {
-        crtpCommanderHighLevelLandWithVelocity(0, 0.4, false);
-        land = true;
+        
       }
       flytime++;
     }

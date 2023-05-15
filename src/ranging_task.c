@@ -23,7 +23,7 @@ static void rangingTask(void *parameters)
     {
       if(flytime == 10) //第一次测距
       {
-        float s1 = 0;
+        s1 = 0;
         for(int i = 0; i < 10; i++)
         {
           s1 += getDistance(0) / 100.0;
@@ -34,7 +34,7 @@ static void rangingTask(void *parameters)
 
       if(flytime == 30) //第二次测距
       {
-        float s2 = 0;
+        s2 = 0;
         for(int i = 0; i < 10; i++)
         {
           s2 += getDistance(0) / 100.0;
@@ -45,7 +45,7 @@ static void rangingTask(void *parameters)
 
       if(flytime == 50) //第三次测距
       {
-        float s3 = 0;
+        s3 = 0;
         for(int i = 0; i < 10; i++)
         {
           s3 += getDistance(0) / 100.0;
@@ -56,7 +56,7 @@ static void rangingTask(void *parameters)
 
       if(flytime == 70) //第四次测距
       {
-        float s4 = 0;
+        s4 = 0;
         for(int i = 0; i < 10; i++)
         {
           s4 += getDistance(0) / 100.0;
@@ -67,7 +67,7 @@ static void rangingTask(void *parameters)
 
       if(flytime == 90) //第五次测距
       {
-        float s5 = 0;
+        s5 = 0;
         for(int i = 0; i < 10; i++)
         {
           s5 += getDistance(0) / 100.0;
@@ -78,7 +78,7 @@ static void rangingTask(void *parameters)
 
       if(flytime == 110) //第六次测距
       {
-        float s6 = 0;
+        s6 = 0;
         for(int i = 0; i < 10; i++)
         {
           s6 += getDistance(0) / 100.0;
