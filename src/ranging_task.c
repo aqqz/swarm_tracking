@@ -87,7 +87,7 @@ static void rangingTask(void *parameters)
         DEBUG_PRINT("s6: %.2f\n", s6);
       }
     }
-    vTaskDelay(10);
+    vTaskDelay(100);
   }
 }
 

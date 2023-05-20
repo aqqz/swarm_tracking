@@ -48,11 +48,11 @@ void flyTask(void *pvParameters)
         {
           crtpCommanderHighLevelGoTo(0, 0.5, 0, 0, 0.1, true);
         }
-        else if(flytime == 60) //y方向后退0.5
+        else if(flytime == 80) //y方向后退0.5
         {
           crtpCommanderHighLevelGoTo(0, -0.5, 0, 0, 0.1, true);
         }
-        else if(flytime == 80) //x方向后退0.5
+        else if(flytime == 100) //x方向后退0.5
         {
           crtpCommanderHighLevelGoTo(-0.5, 0, 0, 0, 0.1, true);
         }
@@ -75,7 +75,31 @@ void flyTask(void *pvParameters)
       }
       else
       {
-        
+        if(takeoff==false)
+        {
+          crtpCommanderHighLevelTakeoff(height, 0.1);
+          takeoff=true;
+        }
+        else if(flytime == 60) //x方向前进0.5
+        {
+          crtpCommanderHighLevelGoTo(0.5, 0, 0, 0, 0.1, true);
+        }
+        else if(flytime < 200)
+        {
+          // if(isdetected) //检测到目标
+          // {
+          //   if(curstate.x > 0) 
+          //   {
+          //     DEBUG_PRINT("TIME: [%d] GOTO: (%.3f, %.3f, %.3f)\n", flytime, (curstate.x-1.0)*0.1, curstate.y*0.1, curstate.z*0.1);
+          //     crtpCommanderHighLevelGoTo((curstate.x-1.0)*0.1, curstate.y*0.1, curstate.z*0.1, 0, 0.1, true);
+          //   }
+          // }
+        }
+        else if(land==false)
+        {
+          crtpCommanderHighLevelLandWithVelocity(0, 0.4, false);
+          land = true;
+        }
       }
       flytime++;
     }

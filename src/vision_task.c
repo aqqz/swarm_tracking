@@ -61,7 +61,7 @@ void visionTask(void *pvParameters)
     if(curframe.box_id == 2 && curframe.box_conf > 0.2)
     {
       isdetected = true;
-      if(distance < 3)
+      if(distance < 2.5)
       {
         vision_measure(&curframe, distance, &curstate);
         lastdistance = distance;

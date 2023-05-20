@@ -81,7 +81,7 @@ void appMain()
 
   reset_estimators();
   uwbInit();
-  rangeInit();
+  // rangeInit();
   visionInit();
   flyInit();
 
