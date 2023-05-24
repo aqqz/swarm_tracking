@@ -6,7 +6,11 @@
 #include "task.h"
 #include "debug.h"
 
-
+typedef struct {
+  float gx;
+  float gy;
+  float gz;
+} imu_t;
 
 void locInit(void);
 

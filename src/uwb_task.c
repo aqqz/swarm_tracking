@@ -34,6 +34,7 @@ SwarmData_t txdata;
 SwarmData_t *rxdata;
 extern int flytime;
 extern bool isflying;
+extern imu_t pos;
 extern bool isdetected;
 extern object_state curstate;
 
@@ -51,48 +52,33 @@ static void uwbTxTask(void *parameters) {
     {
       if(rxdata->flyack!=1) //未收到响应，发送起飞报文
       {
-        txdata.flyack = 0;
         txdata.isflying = isflying;
-        txdata.seqNumber++;
-
-        txPacketCache.header.length = sizeof(Packet_Header_t) + sizeof(SwarmData_t);
-        memcpy(&txPacketCache.payload, &txdata, sizeof(txdata));
-
-        uwbSendPacket(&txPacketCache);
-        // DEBUG_PRINT("uav 0 send.\n");
       }
       else if(flytime < 600) //60s内发送飞行报文
       {
-        txdata.flyack = 0;
-        txdata.isflying = isflying;
-        txdata.seqNumber++;
+        txdata.l.gx = pos.gx;
+        txdata.l.gy = pos.gy;
+        txdata.l.gz = pos.gz;
         txdata.isdetected = isdetected;
         txdata.p.x = curstate.x;
         txdata.p.y = curstate.y;
         txdata.p.z = curstate.z;
-
-        txPacketCache.header.length = sizeof(Packet_Header_t) + sizeof(SwarmData_t);
-        memcpy(&txPacketCache.payload, &txdata, sizeof(txdata));
-
-        uwbSendPacket(&txPacketCache);
-        // DEBUG_PRINT("uav 0 send.\n");
       }
     }
     else //follower无人机
     {
       if(isflying && flytime < 10) //已经起飞，1s内发送响应报文
       {
-        txdata.flyack = 1;
-        txdata.isflying = isflying;
-        txdata.seqNumber++;
-
-        txPacketCache.header.length = sizeof(Packet_Header_t) + sizeof(SwarmData_t);
-        memcpy(&txPacketCache.payload, &txdata, sizeof(txdata));
-
-        uwbSendPacket(&txPacketCache);
-        // DEBUG_PRINT("uav 1 send.\n");
+        txdata.flyack = 1; 
       }
     }
+
+    // send
+    txdata.seqNumber++;
+    txPacketCache.header.length = sizeof(Packet_Header_t) + sizeof(SwarmData_t);
+    memcpy(&txPacketCache.payload, &txdata, sizeof(txdata));
+    uwbSendPacket(&txPacketCache);
+
     vTaskDelay(100);
   }
 }
@@ -103,22 +89,24 @@ static void uwbRxTask(void *parameters) {
 
   while(1)
   {
+    //recv
+    uwbReceivePacket(DATA, &rxPacketCache);
+    rxdata = (SwarmData_t *)&rxPacketCache.payload;
+
     if(MY_UWB_ADDRESS == 0) //leader无人机
     {
-      uwbReceivePacket(DATA, &rxPacketCache);
-      rxdata = (SwarmData_t *)&rxPacketCache.payload;
-      // DEBUG_PRINT("uav 0 recv.\n");
+
     }
     else //follower无人机
     {
-      uwbReceivePacket(DATA, &rxPacketCache);
-      rxdata = (SwarmData_t *)&rxPacketCache.payload;
       isflying = rxdata->isflying; //更新起飞状态
+      pos.gx = rxdata->l.gx; //更新leader位置
+      pos.gy = rxdata->l.gy;
+      pos.gz = rxdata->l.gz;
       isdetected = rxdata->isdetected; //更新目标状态
       curstate.x = rxdata->p.x; //更新飞行状态
       curstate.y = rxdata->p.y;
       curstate.z = rxdata->p.z;
-      // DEBUG_PRINT("uav 1 recv.\n");
     }
     vTaskDelay(100);
   }
