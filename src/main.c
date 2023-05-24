@@ -4,7 +4,7 @@
 #include "debug.h"
 #include "fly_task.h"
 #include "uwb_task.h"
-#include "ranging_task.h"
+#include "loc_task.h"
 #include "vision_task.h"
 
 
@@ -81,7 +81,7 @@ void appMain()
 
   reset_estimators();
   uwbInit();
-  // rangeInit();
+  locInit();
   visionInit();
   flyInit();
 

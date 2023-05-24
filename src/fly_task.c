@@ -40,22 +40,6 @@ void flyTask(void *pvParameters)
           crtpCommanderHighLevelTakeoff(height, 0.1);
           takeoff=true;
         }
-        else if(flytime == 20) //x方向前进0.5
-        {
-          crtpCommanderHighLevelGoTo(0.5, 0, 0, 0, 0.1, true);
-        }
-        else if(flytime == 40) //y方向前进0.5
-        {
-          crtpCommanderHighLevelGoTo(0, 0.5, 0, 0, 0.1, true);
-        }
-        else if(flytime == 80) //y方向后退0.5
-        {
-          crtpCommanderHighLevelGoTo(0, -0.5, 0, 0, 0.1, true);
-        }
-        else if(flytime == 100) //x方向后退0.5
-        {
-          crtpCommanderHighLevelGoTo(-0.5, 0, 0, 0, 0.1, true);
-        }
         else if(flytime < 200) //跟踪
         {
           // if(isdetected) //检测到目标
@@ -79,10 +63,6 @@ void flyTask(void *pvParameters)
         {
           crtpCommanderHighLevelTakeoff(height, 0.1);
           takeoff=true;
-        }
-        else if(flytime == 60) //x方向前进0.5
-        {
-          crtpCommanderHighLevelGoTo(0.5, 0, 0, 0, 0.1, true);
         }
         else if(flytime < 200)
         {

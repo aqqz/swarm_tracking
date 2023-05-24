@@ -1,5 +1,5 @@
-#ifndef __RANGING_TASK_H__
-#define __RANGING_TASK_H__
+#ifndef __LOC_TASK_H__
+#define __LOC_TASK_H__
 
 #include "FreeRTOS.h"
 #include "swarm_ranging.h"
@@ -8,6 +8,6 @@
 
 
 
-void rangeInit(void);
+void locInit(void);
 
 #endif
